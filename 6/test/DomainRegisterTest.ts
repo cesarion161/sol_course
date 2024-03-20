@@ -76,7 +76,6 @@ describe("Domain registration", function () {
         }
 
         it("Should reject domain that is too long", async function () {
-            // Assuming the maximum length is 253 characters for a full domain name
             const longDomain = "a".repeat(254) + ".com";
             await testInvalidDomainRegistration(longDomain);
         });
