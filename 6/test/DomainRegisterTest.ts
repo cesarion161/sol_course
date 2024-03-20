@@ -33,7 +33,7 @@ describe("Domain registration", function () {
             const registrationFee = {value: SUFFICIENT_FEE};
             const tx1 = await domainRegister.connect(owner)
                 .registerDomain("example.com", registrationFee);
-            await tx1.wait();
+            const receipt1 = await tx1.wait();
             const tx2 = await domainRegister.connect(owner)
                 .registerDomain("example.org", registrationFee);
             const receipt2 = await tx2.wait();
@@ -42,12 +42,14 @@ describe("Domain registration", function () {
                 "event DomainRegistered(address indexed controller, string domain, uint256 timestamp, uint256 totalRegistered)"
             ]);
 
-            const events1 = receipt2!.logs
+            const events1 = receipt1!.logs
                 .map(log => domainRegisterInterface.parseLog(log))
-                .filter(parsedLog => parsedLog!.name === "DomainRegistered");
+                .filter(parsedLog => parsedLog!.name === "DomainRegistered")
+                .filter(parsedLog => parsedLog!.args.totalRegistered === 1n);
             const events2 = receipt2!.logs
                 .map(log => domainRegisterInterface.parseLog(log))
-                .filter(parsedLog => parsedLog!.name === "DomainRegistered");
+                .filter(parsedLog => parsedLog!.name === "DomainRegistered")
+                .filter(parsedLog => parsedLog!.args.totalRegistered === 2n);
 
             expect(events1.length).to.be.equal(1);
             expect(events2.length).to.be.equal(1);
